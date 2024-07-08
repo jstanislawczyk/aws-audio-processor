@@ -3,6 +3,13 @@
 # IDE
 .idea
 
+# Terraform
+deployment/.terraform
+deployment/terraform.tfstate
+deployment/terraform.tfstate.backup
+deployment/artifacts
+deployment/.terraform.lock.hcl
+
 # Dependencies
 node_modules
 .pnp
@@ -21,15 +28,12 @@ coverage
 # Turbo
 .turbo
 
-# Vercel
-.vercel
-
 # Build Outputs
 .next/
 out/
 build
 dist
-
+backend/lambdas/*/dist
 
 # Debug
 npm-debug.log*
