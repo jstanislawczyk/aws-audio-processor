@@ -20,7 +20,7 @@ resource "aws_apigatewayv2_integration" "upload_url_generator_integration" {
 
 resource "aws_apigatewayv2_route" "upload_url_generator_route" {
   api_id             = aws_apigatewayv2_api.api.id
-  route_key          = "GET /api/upload/url"
+  route_key          = "POST /api/upload"
   target             = "integrations/${aws_apigatewayv2_integration.upload_url_generator_integration.id}"
   authorization_type = "NONE"
 }

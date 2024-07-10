@@ -1,13 +1,44 @@
-import {APIGatewayProxyResult} from 'aws-lambda';
+import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
+import {initS3Client} from './s3-client';
+import {PutObjectCommand} from '@aws-sdk/client-s3';
+import * as path from 'node:path';
+import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 
-export const handler = async (): Promise<APIGatewayProxyResult> => {
-    console.log(123);
+export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    const eventBody = event.body;
+
+    if (!eventBody) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({ message: 'File name is required' }),
+        };
+    }
+
+    const bucketName = process.env.BUCKET_NAME;
+
+    if (!bucketName) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ message: 'Bucket name is not provided' }),
+        };
+    }
+
+    const fileName = JSON.parse(eventBody).fileName;
+    const { name: fileBaseName, ext } = path.parse(fileName);
+    const id = crypto.randomUUID();
+    const s3Client = initS3Client();
+    const putObjectCommand = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: `uploads/${fileBaseName}/${id}${ext}`,
+        Metadata: {
+            id,
+        },
+    });
+
+    const url = await getSignedUrl(s3Client, putObjectCommand, { expiresIn: 3600 })
+
     return {
-        isBase64Encoded: false,
         statusCode: 200,
-        body: "Hello from Lambda!",
-        headers: {
-            "content-type": "application/json"
-        }
-    };
+        body: JSON.stringify({ url }),
+    }
 }
