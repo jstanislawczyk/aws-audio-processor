@@ -1,7 +1,7 @@
 import {APIGatewayProxyEvent, APIGatewayProxyResult} from 'aws-lambda';
 import {initS3Client} from './s3-client';
 import {PutObjectCommand} from '@aws-sdk/client-s3';
-import * as path from 'node:path';
+import path from 'path';
 import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 
 export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
