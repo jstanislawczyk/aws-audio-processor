@@ -3,43 +3,30 @@ resource "aws_lambda_function" "upload_url_generator" {
   handler       = "index.handler"
   runtime       = "nodejs20.x"
   role          = aws_iam_role.upload_url_generator_role.arn
-  filename      = data.archive_file.lambda.output_path
+  filename      = data.archive_file.upload_url_generator.output_path
 
-  source_code_hash = data.archive_file.lambda.output_base64sha256
+  source_code_hash = data.archive_file.upload_url_generator.output_base64sha256
 
   environment {
     variables = {
-      AWS_REGION  = local.region
+      REGION      = local.region
       BUCKET_NAME = aws_s3_bucket.audio.bucket
     }
   }
 }
 
-data "aws_iam_policy_document" "assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com"]
-    }
-
-    actions = ["sts:AssumeRole"]
-  }
-}
-
 resource "aws_iam_role" "upload_url_generator_role" {
-  name               = "upload-url-generator-role"
+  name               = "upload-url-generator"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "attachment" {
+resource "aws_iam_role_policy_attachment" "upload_url_generator" {
   role       = aws_iam_role.upload_url_generator_role.name
-  policy_arn = aws_iam_policy.lambda_policy.arn
+  policy_arn = aws_iam_policy.upload_url_generator_policy.arn
 }
 
-resource "aws_iam_policy" "lambda_policy" {
-  name = "${local.project}-logs-policy"
+resource "aws_iam_policy" "upload_url_generator_policy" {
+  name = "${local.project}-upload-url-generator"
 
   policy = <<EOF
 {
@@ -75,7 +62,7 @@ resource "aws_lambda_permission" "api_gw" {
   source_arn = "${aws_apigatewayv2_api.api.execution_arn}/*/*"
 }
 
-data "archive_file" "lambda" {
+data "archive_file" "upload_url_generator" {
   type        = "zip"
   source_dir  = "${path.module}/../backend/lambdas/upload-url-generator/dist"
   output_path = "artifacts/upload-url-generator.zip"

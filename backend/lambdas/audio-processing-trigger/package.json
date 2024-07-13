@@ -1,0 +1,22 @@
+{
+  "name": "audio-processing-trigger",
+  "version": "1.0.0",
+  "description": "Lambda that triggers the audio processing workflow",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.140",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sfn": "^3.609.0",
+    "@audio-processor/schemas": "*"
+  }
+}
