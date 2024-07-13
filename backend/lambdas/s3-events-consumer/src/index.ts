@@ -1,31 +1,35 @@
 import {S3Event, S3EventRecord} from 'aws-lambda';
-import {initSFNClient} from './sfn-clients';
-import {StartExecutionCommand} from '@aws-sdk/client-sfn';
+import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
+import {initSQSClient} from './sqs-client';
+import {AudioFileEvent} from '@audio-processor/schemas';
 
 export const handler = async (event: S3Event): Promise<void> => {
-    console.log('Received events: ', event.Records.map((record) => record.s3.object.key))
     const records = event.Records;
+
+    console.log('Received events: ', records.map((record) => record.s3.object.key));
+
     const promises = [];
-    const sfnClient = initSFNClient();
+    const sqsClient = initSQSClient();
 
     for (const record of records) {
-        const startExecutionCommand = createStartExecutionCommand(record);
-        const startExecutionPromise = sfnClient.send(startExecutionCommand);
-        promises.push(startExecutionPromise);
+        const sendSqsMessagePromise = sendAudioFileEvent(sqsClient, record);
+        promises.push(sendSqsMessagePromise);
     }
 
     await Promise.all(promises);
 }
 
-const createStartExecutionCommand = (s3EventRecord: S3EventRecord) => {
-    const s3Data = s3EventRecord.s3;
-    const stateMachineEvent = {
-        bucketName: s3Data.bucket.name,
-        objectKey: s3Data.object.key,
-    }
-
-    return new StartExecutionCommand({
-        stateMachineArn: process.env.STATE_MACHINE_ARN,
-        input: JSON.stringify(stateMachineEvent),
+const sendAudioFileEvent = (sqsClient: SQSClient, s3EventRecord: S3EventRecord) => {
+    const audioFileEvent: AudioFileEvent = {
+        bucketName: s3EventRecord.s3.bucket.name,
+        objectKey: s3EventRecord.s3.object.key,
+    };
+    const sqsPublishCommand =  new SendMessageCommand({
+        QueueUrl: process.env.SQS_QUEUE_URL,
+        MessageBody: JSON.stringify(audioFileEvent),
+        MessageGroupId: 'audio-file-events',
+        MessageDeduplicationId: audioFileEvent.objectKey,
     });
+
+    return sqsClient.send(sqsPublishCommand);
 }

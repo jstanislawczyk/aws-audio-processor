@@ -1,0 +1,9 @@
+{
+  "name": "@audio-processor/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.ts",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

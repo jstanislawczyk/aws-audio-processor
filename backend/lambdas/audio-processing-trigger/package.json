@@ -1,7 +1,7 @@
 {
-  "name": "s3-events-consumer",
+  "name": "audio-processing-trigger",
   "version": "1.0.0",
-  "description": "Lambda that consumes S3 events and sends messages to SQS for deduplication",
+  "description": "Lambda that triggers the audio processing workflow",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -16,7 +16,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.609.0",
+    "@aws-sdk/client-sfn": "^3.609.0",
     "@audio-processor/schemas": "*"
   }
 }

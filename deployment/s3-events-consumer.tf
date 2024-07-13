@@ -9,8 +9,8 @@ resource "aws_lambda_function" "s3_events_consumer" {
 
   environment {
     variables = {
-      REGION            = local.region
-      STATE_MACHINE_ARN = aws_sfn_state_machine.audio_processor.arn
+      REGION        = local.region
+      SQS_QUEUE_URL = aws_sqs_queue.audio-events.id
     }
   }
 }
@@ -44,9 +44,9 @@ resource "aws_iam_policy" "s3_events_consumer_policy" {
     {
       "Effect": "Allow",
       "Action": [
-        "states:StartExecution"
+        "sqs:SendMessage"
       ],
-      "Resource": "${aws_sfn_state_machine.audio_processor.arn}"
+      "Resource": "${aws_sqs_queue.audio-events.arn}"
     }
   ]
 }
