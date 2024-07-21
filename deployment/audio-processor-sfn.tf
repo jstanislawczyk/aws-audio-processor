@@ -5,11 +5,11 @@ resource "aws_sfn_state_machine" "audio_processor" {
   definition = <<EOF
 {
   "Comment": "Audio Processor State Machine that transcribes audio files to text and transforms them to common format.",
-  "StartAt": "Wait",
+  "StartAt": "TransformAudio",
   "States": {
-    "Wait": {
-      "Type": "Wait",
-      "Seconds": 1,
+    "TransformAudio": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.audio_transformer.arn}",
       "End": true
     }
   }
@@ -33,5 +33,32 @@ data "aws_iam_policy_document" "audio_processor_policy" {
 
     actions = ["sts:AssumeRole"]
   }
+}
+
+
+resource "aws_iam_role_policy_attachment" "audio_processor_role_attachment" {
+  role       = aws_iam_role.audio_processor.name
+  policy_arn = aws_iam_policy.invoke_lambdas.arn
+}
+
+resource "aws_iam_policy" "invoke_lambdas" {
+  name = "${local.project}-audio-processor-invoke-lambdas"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "lambda:InvokeFunction"
+      ],
+      "Resource": [
+        "${aws_lambda_function.audio_transformer.arn}"
+      ]
+    }
+  ]
+}
+EOF
 }
 
