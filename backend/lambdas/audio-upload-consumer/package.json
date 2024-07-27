@@ -1,7 +1,7 @@
 {
-  "name": "transcribe-files-consumer",
+  "name": "audio-upload-consumer",
   "version": "1.0.0",
-  "description": "Lambda that consumes S3 events for created transcription files",
+  "description": "Lambda that consumes S3 events and sends messages to SQS for deduplication",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -16,6 +16,7 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@audio-processor/schemas": "*"
+    "@audio-processor/schemas": "*",
+    "@aws-sdk/client-sqs": "^3.609.0",
   }
 }

@@ -5,12 +5,33 @@ resource "aws_sfn_state_machine" "audio_processor" {
   definition = <<EOF
 {
   "Comment": "Audio Processor State Machine that transcribes audio files to text and transforms them to common format.",
-  "StartAt": "TransformAudio",
+  "StartAt": "ProcessAudio",
   "States": {
-    "TransformAudio": {
-      "Type": "Task",
-      "Resource": "${aws_lambda_function.audio_transformer.arn}",
-      "End": true
+    "ProcessAudio": {
+      "Type": "Parallel",
+      "End": true,
+      "Branches": [
+        {
+          "StartAt": "TransformAudio",
+          "States": {
+            "TransformAudio": {
+              "Type": "Task",
+              "Resource": "${aws_lambda_function.audio_transformer.arn}",
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "TranscribeAudio",
+          "States": {
+            "TranscribeAudio": {
+              "Type": "Task",
+              "Resource": "${aws_lambda_function.audio_transcriber.arn}",
+              "End": true
+            }
+          }
+        }
+      ]
     }
   }
 }
@@ -54,7 +75,8 @@ resource "aws_iam_policy" "invoke_lambdas" {
         "lambda:InvokeFunction"
       ],
       "Resource": [
-        "${aws_lambda_function.audio_transformer.arn}"
+        "${aws_lambda_function.audio_transformer.arn}",
+        "${aws_lambda_function.audio_transcriber.arn}"
       ]
     }
   ]

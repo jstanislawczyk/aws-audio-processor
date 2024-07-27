@@ -6,7 +6,7 @@ import {GetObjectCommand, PutObjectCommand} from '@aws-sdk/client-s3';
 import {
   NodeJsRuntimeStreamingBlobPayloadOutputTypes
 } from '@smithy/types/dist-types/streaming-payload/streaming-blob-payload-output-types';
-import * as path from 'node:path';
+import * as path from 'path';
 
 export const handler = async (audioFileEvent: AudioFileEvent): Promise<void> => {
     console.log('Received event:', JSON.stringify(audioFileEvent, null, 2));
@@ -140,7 +140,7 @@ const uploadFileToS3 = async (mergedFilePath: string, s3ObjectLocation: S3Object
 
     const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
-        Key: `output/${name}${ext}`,
+        Key: `${name}/output${ext}`,
         Body: fileContent,
     });
 
