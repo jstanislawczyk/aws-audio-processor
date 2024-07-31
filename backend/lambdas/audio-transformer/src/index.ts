@@ -1,4 +1,4 @@
-import {AudioFileEvent, S3ObjectLocation} from '@audio-processor/schemas';
+import {AudioFileEvent, S3Object} from '@audio-processor/schemas';
 import ffmpeg from 'fluent-ffmpeg';
 import * as fs from 'fs/promises';
 import {initS3Client} from './s3-client.js';
@@ -73,11 +73,11 @@ const mergeAudioFiles = (introFilePath: string, audioFilePath: string, tempDirPa
 }
 
 const fetchAudioFile = async (event: AudioFileEvent, tempDirPath: string): Promise<string> => {
-    const audioFilePath = buildLocalFilePath(tempDirPath, event.objectKey);
+    const audioFilePath = buildLocalFilePath(tempDirPath, event.source.key);
 
     console.log('Fetching audio file from S3:', JSON.stringify(event));
 
-    const audioFile = await fetchS3File(event);
+    const audioFile = await fetchS3File(event.source);
     await fs.writeFile(audioFilePath, audioFile);
 
     return audioFilePath;
@@ -87,9 +87,9 @@ const fetchIntroFile = async (tempDirPath: string): Promise<string> => {
     // Provide predefined intro file in given bucket and with given key
     const bucketName = process.env.AUDIO_BUCKET_NAME || '';
     const introFileS3Key = 'intro/intro.mp3';
-    const s3ObjectLocation: S3ObjectLocation = {
+    const s3ObjectLocation: S3Object = {
         bucketName,
-        objectKey: introFileS3Key,
+        key: introFileS3Key,
     };
     const introFilePath = buildLocalFilePath(tempDirPath, introFileS3Key);
 
@@ -106,12 +106,12 @@ const buildLocalFilePath = (tempDirPath: string, key: string): string => {
     return `${tempDirPath}/${fileName}`;
 }
 
-const fetchS3File = async (s3ObjectLocation: S3ObjectLocation): Promise<NodeJsRuntimeStreamingBlobPayloadOutputTypes> => {
+const fetchS3File = async (s3Object: S3Object): Promise<NodeJsRuntimeStreamingBlobPayloadOutputTypes> => {
     const s3Client = initS3Client();
-    const {bucketName, objectKey} = s3ObjectLocation;
+    const {bucketName, key} = s3Object;
     const params = {
         Bucket:bucketName,
-        Key: objectKey,
+        Key: key,
     };
     const getObjectCommand = new GetObjectCommand(params);
     let data;
@@ -120,27 +120,26 @@ const fetchS3File = async (s3ObjectLocation: S3ObjectLocation): Promise<NodeJsRu
         data = await s3Client.send(getObjectCommand);
     } catch (err) {
         console.log('Error: ', err);
-        throw new Error(`Failed to fetch file from S3. Bucket: ${bucketName}, Key: ${objectKey}`);
+        throw new Error(`Failed to fetch file from S3. Bucket: ${bucketName}, Key: ${key}`);
     }
 
     if (data.Body === undefined) {
-        throw new Error(`Body is undefined. Bucket: ${bucketName}, Key: ${objectKey}`);
+        throw new Error(`Body is undefined. Bucket: ${bucketName}, Key: ${key}`);
     }
 
     return data.Body as NodeJsRuntimeStreamingBlobPayloadOutputTypes;
 }
 
-const uploadFileToS3 = async (mergedFilePath: string, s3ObjectLocation: S3ObjectLocation): Promise<void> => {
+const uploadFileToS3 = async (mergedFilePath: string, audioFileEvent: AudioFileEvent): Promise<void> => {
     const s3Client = initS3Client();
-    const { bucketName, objectKey } = s3ObjectLocation;
-    const { name } = path.parse(objectKey);
+    const { bucketName, dir } = audioFileEvent.target;
     const ext = path.parse(mergedFilePath).ext;
-
+    const targetKey = `${dir}/output${ext}`;
     const fileContent = await fs.readFile(mergedFilePath);
 
     const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
-        Key: `${name}/output${ext}`,
+        Key: targetKey,
         Body: fileContent,
     });
 
@@ -148,6 +147,6 @@ const uploadFileToS3 = async (mergedFilePath: string, s3ObjectLocation: S3Object
         await s3Client.send(putObjectCommand);
     } catch (err) {
         console.log('Error: ', err);
-        throw new Error(`Failed to upload file to S3. Bucket: ${bucketName}, Key: ${objectKey}`);
+        throw new Error(`Failed to upload file to S3. Bucket: ${bucketName}, Key: ${targetKey}`);
     }
 }

@@ -1,4 +1,10 @@
+import {S3Object} from './s3';
+
 export interface AudioFileEvent {
-  bucketName: string;
-  objectKey: string;
+  id: string;
+  target: {
+    bucketName: string;
+    dir: string;
+  };
+  source: S3Object;
 }

@@ -17,6 +17,6 @@
   },
   "dependencies": {
     "@audio-processor/schemas": "*",
-    "@aws-sdk/client-sqs": "^3.609.0",
+    "@aws-sdk/client-sqs": "^3.609.0"
   }
 }

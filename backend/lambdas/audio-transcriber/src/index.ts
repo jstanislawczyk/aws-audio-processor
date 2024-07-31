@@ -1,19 +1,19 @@
 import {initTranscribeClient} from './transcribe-client.js';
 import {AudioFileEvent} from '@audio-processor/schemas';
 import {StartTranscriptionJobCommand} from '@aws-sdk/client-transcribe';
-import path from 'path';
 
 export const handler = async (audioFileEvent: AudioFileEvent): Promise<void> => {
-    const {bucketName, objectKey} = audioFileEvent;
-    const { name } = path.parse(objectKey);
+    const { source, target } = audioFileEvent;
+    const { bucketName: sourceBucketName, key } = source;
+    const { bucketName: targetBucketName, dir } = target;
     const startTranscriptionJobCommand = new StartTranscriptionJobCommand({
         TranscriptionJobName: crypto.randomUUID(),
         LanguageCode: 'pl-PL',
         Media: {
-            MediaFileUri: `s3://${bucketName}/${objectKey}`,
+            MediaFileUri: `s3://${sourceBucketName}/${key}`,
         },
-        OutputBucketName: bucketName,
-        OutputKey: `${name}/transcription.json`,
+        OutputBucketName: targetBucketName,
+        OutputKey: `${dir}/transcription.json`,
     });
     const transcribeClient = initTranscribeClient();
 

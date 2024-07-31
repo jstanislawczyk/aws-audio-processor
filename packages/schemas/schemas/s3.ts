@@ -1,5 +1,5 @@
-export interface S3ObjectLocation {
+export interface S3Object {
   bucketName: string;
-  objectKey: string;
+  key: string;
 }
 
