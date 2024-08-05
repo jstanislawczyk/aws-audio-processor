@@ -16,7 +16,7 @@ resource "aws_lambda_function" "audio_upload_consumer" {
 }
 
 resource "aws_iam_role" "audio_upload_consumer" {
-  name               = "audio-upload-consumer"
+  name               = "${local.project}-audio-upload-consumer"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 

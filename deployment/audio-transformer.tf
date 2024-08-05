@@ -22,7 +22,7 @@ resource "aws_lambda_function" "audio_transformer" {
 }
 
 resource "aws_iam_role" "audio_transformer" {
-  name               = "audio-transformer"
+  name               = "${local.project}-audio-transformer"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 

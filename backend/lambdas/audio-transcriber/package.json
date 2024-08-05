@@ -11,12 +11,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@audio-processor/schemas": "*",
     "@types/aws-lambda": "^8.10.140",
     "esbuild": "^0.23.0",
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@audio-processor/schemas": "*",
-    "@aws-sdk/client-transcribe": "^3.609.0"
+    "@aws-sdk/client-transcribe": "^3.609.0",
+    "@aws-sdk/client-dynamodb": "^3.609.0",
+    "@aws-sdk/lib-dynamodb": "^3.609.0"
   }
 }

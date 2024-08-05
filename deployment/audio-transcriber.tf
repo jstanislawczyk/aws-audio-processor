@@ -9,13 +9,14 @@ resource "aws_lambda_function" "audio_transcriber" {
 
   environment {
     variables = {
-      REGION = local.region
+      REGION               = local.region
+      AUDIO_JOB_TABLE_NAME = aws_dynamodb_table.audio_job.name
     }
   }
 }
 
 resource "aws_iam_role" "audio_transcriber" {
-  name               = "audio-transcriber"
+  name               = "${local.project}-audio-transcriber"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -58,6 +59,13 @@ resource "aws_iam_policy" "audio_transcriber_policy" {
         "${aws_s3_bucket.audio.arn}",
         "${aws_s3_bucket.audio.arn}/*"
       ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:UpdateItem"
+      ],
+      "Resource": "${aws_dynamodb_table.audio_job.arn}"
     }
   ]
 }

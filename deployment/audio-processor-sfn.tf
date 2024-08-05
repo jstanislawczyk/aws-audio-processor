@@ -9,7 +9,7 @@ resource "aws_sfn_state_machine" "audio_processor" {
   "States": {
     "ProcessAudio": {
       "Type": "Parallel",
-      "End": true,
+      "Next": "NotifyProcessingFinished",
       "Branches": [
         {
           "StartAt": "TransformAudio",
@@ -26,12 +26,28 @@ resource "aws_sfn_state_machine" "audio_processor" {
           "States": {
             "TranscribeAudio": {
               "Type": "Task",
-              "Resource": "${aws_lambda_function.audio_transcriber.arn}",
+              "Resource": "arn:aws:states:::lambda:invoke.waitForTaskToken",
+              "Parameters": {
+                "FunctionName": "${aws_lambda_function.audio_transcriber.arn}",
+                "Payload": {
+                  "audioEvent.$": "$",
+                  "taskToken.$": "$$.Task.Token"
+                }
+              },
               "End": true
             }
           }
         }
       ]
+    },
+    "NotifyProcessingFinished": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::sns:publish",
+      "Parameters": {
+        "TopicArn": "${aws_sns_topic.audio_processing_finished.arn}",
+        "Message.$": "$"
+      },
+      "End": true
     }
   }
 }
@@ -77,6 +93,15 @@ resource "aws_iam_policy" "invoke_lambdas" {
       "Resource": [
         "${aws_lambda_function.audio_transformer.arn}",
         "${aws_lambda_function.audio_transcriber.arn}"
+      ]
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sns:Publish"
+      ],
+      "Resource": [
+        "${aws_sns_topic.audio_processing_finished.arn}"
       ]
     }
   ]

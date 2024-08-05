@@ -9,14 +9,14 @@ resource "aws_lambda_function" "transcribe_files_consumer" {
 
   environment {
     variables = {
-      REGION           = local.region
-      STATE_TABLE_NAME = aws_dynamodb_table.audio_processor_state.name
+      REGION               = local.region
+      AUDIO_JOB_TABLE_NAME = aws_dynamodb_table.audio_job.name
     }
   }
 }
 
 resource "aws_iam_role" "transcribe_files_consumer" {
-  name               = "transcribe-files-consumer"
+  name               = "${local.project}-transcribe-files-consumer"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -40,6 +40,21 @@ resource "aws_iam_policy" "transcribe_files_consumer_policy" {
         "logs:PutLogEvents"
       ],
       "Resource": "arn:aws:logs:${local.region}:${data.aws_caller_identity.current.account_id}:log-group:/aws/lambda/*:*:*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:GetItem",
+        "dynamodb:UpdateItem"
+      ],
+      "Resource": "${aws_dynamodb_table.audio_job.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "states:SendTaskSuccess"
+      ],
+      "Resource": "${aws_sfn_state_machine.audio_processor.arn}"
     }
   ]
 }

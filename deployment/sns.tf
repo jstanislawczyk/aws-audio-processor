@@ -3,7 +3,7 @@ resource "aws_sns_topic" "audio_processing_finished" {
 }
 
 resource "aws_sns_topic_subscription" "email_subscription" {
-  endpoint  = "desenef318@leacore.com"
+  endpoint  = "Replace with your email address"
   protocol  = "email"
   topic_arn = aws_sns_topic.audio_processing_finished.arn
 }
