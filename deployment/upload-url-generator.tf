@@ -16,7 +16,7 @@ resource "aws_lambda_function" "upload_url_generator" {
 }
 
 resource "aws_iam_role" "upload_url_generator_role" {
-  name               = "upload-url-generator"
+  name               = "${local.project}-upload-url-generator"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 

@@ -9,14 +9,15 @@ resource "aws_lambda_function" "audio_processing_trigger" {
 
   environment {
     variables = {
-      REGION            = local.region
-      STATE_MACHINE_ARN = aws_sfn_state_machine.audio_processor.arn
+      REGION               = local.region
+      STATE_MACHINE_ARN    = aws_sfn_state_machine.audio_processor.arn
+      AUDIO_JOB_TABLE_NAME = aws_dynamodb_table.audio_job.name
     }
   }
 }
 
 resource "aws_iam_role" "audio_processing_trigger" {
-  name               = "audio-processing-trigger"
+  name               = "${local.project}-audio-processing-trigger"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -56,6 +57,13 @@ resource "aws_iam_policy" "audio_processing_trigger_policy" {
         "sqs:GetQueueAttributes"
       ],
       "Resource": "${aws_sqs_queue.audio-events.arn}"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:PutItem"
+      ],
+      "Resource": "${aws_dynamodb_table.audio_job.arn}"
     }
   ]
 }

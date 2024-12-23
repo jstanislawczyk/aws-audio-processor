@@ -1,7 +1,7 @@
 {
-  "name": "audio-processing-trigger",
+  "name": "audio-upload-consumer",
   "version": "1.0.0",
-  "description": "Lambda that triggers the audio processing workflow",
+  "description": "Lambda that consumes S3 events and sends messages to SQS for deduplication",
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
@@ -17,8 +17,6 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
-    "@aws-sdk/client-sfn": "^3.609.0",
-    "@aws-sdk/client-dynamodb": "^3.609.0",
-    "@aws-sdk/lib-dynamodb": "^3.609.0"
+    "@aws-sdk/client-sqs": "^3.609.0"
   }
 }

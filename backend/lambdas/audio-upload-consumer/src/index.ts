@@ -2,6 +2,7 @@ import {S3Event, S3EventRecord} from 'aws-lambda';
 import {SendMessageCommand, SQSClient} from '@aws-sdk/client-sqs';
 import {initSQSClient} from './sqs-client';
 import {AudioFileEvent} from '@audio-processor/schemas';
+import * as path from 'node:path';
 
 export const handler = async (event: S3Event): Promise<void> => {
     const records = event.Records;
@@ -20,15 +21,25 @@ export const handler = async (event: S3Event): Promise<void> => {
 }
 
 const sendAudioFileEvent = (sqsClient: SQSClient, s3EventRecord: S3EventRecord) => {
+    const s3Key = s3EventRecord.s3.object.key;
+    const s3Bucket = s3EventRecord.s3.bucket.name;
+    const audioId = path.parse(s3Key).name;
     const audioFileEvent: AudioFileEvent = {
-        bucketName: s3EventRecord.s3.bucket.name,
-        objectKey: s3EventRecord.s3.object.key,
+        id: audioId,
+        target: {
+            bucketName: s3Bucket,
+            dir: `processed/${audioId}`,
+        },
+        source: {
+            bucketName: s3Bucket,
+            key:s3Key,
+        }
     };
     const sqsPublishCommand =  new SendMessageCommand({
         QueueUrl: process.env.SQS_QUEUE_URL,
         MessageBody: JSON.stringify(audioFileEvent),
         MessageGroupId: 'audio-file-events',
-        MessageDeduplicationId: audioFileEvent.objectKey,
+        MessageDeduplicationId: audioId,
     });
 
     return sqsClient.send(sqsPublishCommand);

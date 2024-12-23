@@ -9,6 +9,7 @@ deployment/terraform.tfstate
 deployment/terraform.tfstate.backup
 deployment/artifacts
 deployment/.terraform.lock.hcl
+deployment/layers/*.zip
 
 # Dependencies
 node_modules

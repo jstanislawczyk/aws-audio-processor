@@ -29,7 +29,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     const s3Client = initS3Client();
     const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
-        Key: `uploads/${fileBaseName}/${id}${ext}`,
+        Key: `uploaded/${fileBaseName}/${id}${ext}`,
         Metadata: {
             id,
         },
