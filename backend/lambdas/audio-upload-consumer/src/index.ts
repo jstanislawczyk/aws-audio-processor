@@ -32,7 +32,7 @@ const sendAudioFileEvent = (sqsClient: SQSClient, s3EventRecord: S3EventRecord) 
         },
         source: {
             bucketName: s3Bucket,
-            key:s3Key,
+            key: s3Key,
         }
     };
     const sqsPublishCommand =  new SendMessageCommand({

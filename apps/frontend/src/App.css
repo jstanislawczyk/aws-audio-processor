@@ -7,4 +7,17 @@
 
 .file-details {
     margin-top: 30px;
+
+    ul {
+        padding: 0;
+        text-align: left;
+    }
+}
+
+.file-upload-error {
+    color: red;
+}
+
+.file-upload-success {
+    color: green;
 }
