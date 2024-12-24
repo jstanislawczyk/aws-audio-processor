@@ -3,6 +3,17 @@ resource "aws_s3_bucket" "audio" {
   force_destroy = true
 }
 
+resource "aws_s3_bucket_cors_configuration" "example" {
+  bucket = aws_s3_bucket.audio.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT"]
+    allowed_origins = ["*"]
+    expose_headers  = []
+  }
+}
+
 resource "aws_s3_bucket_notification" "upload_notification" {
   bucket = aws_s3_bucket.audio.id
 
