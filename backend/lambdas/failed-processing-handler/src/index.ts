@@ -17,7 +17,7 @@ export const updateJob = async (jobId: string): Promise<void> => {
         Key: {
             id: jobId,
         },
-        UpdateExpression: 'SET #status = :status',
+        UpdateExpression: 'SET #status = :status REMOVE taskToken',
         ExpressionAttributeNames: {
             '#status': 'status',
         },

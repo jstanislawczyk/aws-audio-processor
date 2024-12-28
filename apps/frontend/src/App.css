@@ -1,11 +1,55 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.audio {
+    display: flex;
+    justify-content: space-between;
+}
+
+.audio-upload {
+    flex: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.audio-files {
+    flex: 30%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background-color: #353535;
+}
+
+.job-status-failed {
+    color: red;
+}
+
+.job-status-completed {
+    color: green;
+}
+
+.job-status-processing {
+    color: lightskyblue;
+}
+
+.audio-files-table {
+    margin-bottom: 15px;
+    border: 1px solid;
+
+    th, td {
+        border: 1px solid;
+        padding: 3px;
+    }
 }
 
 .file-details {
+    text-align: center;
     margin-top: 30px;
 
     ul {

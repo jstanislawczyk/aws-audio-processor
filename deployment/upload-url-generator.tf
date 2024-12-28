@@ -53,7 +53,7 @@ resource "aws_iam_policy" "upload_url_generator_policy" {
 EOF
 }
 
-resource "aws_lambda_permission" "api_gw" {
+resource "aws_lambda_permission" "api_gw_upload_url_generator" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.upload_url_generator.function_name
