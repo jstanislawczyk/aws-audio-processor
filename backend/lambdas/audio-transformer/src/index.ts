@@ -109,11 +109,10 @@ const buildLocalFilePath = (tempDirPath: string, key: string): string => {
 const fetchS3File = async (s3Object: S3Object): Promise<NodeJsRuntimeStreamingBlobPayloadOutputTypes> => {
     const s3Client = initS3Client();
     const {bucketName, key} = s3Object;
-    const params = {
+    const getObjectCommand = new GetObjectCommand({
         Bucket:bucketName,
         Key: key,
-    };
-    const getObjectCommand = new GetObjectCommand(params);
+    });
     let data;
 
     try {

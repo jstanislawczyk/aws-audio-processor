@@ -38,6 +38,13 @@ resource "aws_sfn_state_machine" "audio_processor" {
             }
           }
         }
+      ],
+      "Catch": [
+        {
+          "ErrorEquals": ["States.ALL"],
+          "Next": "FailedProcessing",
+          "ResultPath": "$.error"
+        }
       ]
     },
     "NotifyProcessingFinished": {
@@ -47,6 +54,11 @@ resource "aws_sfn_state_machine" "audio_processor" {
         "TopicArn": "${aws_sns_topic.audio_processing_finished.arn}",
         "Message.$": "$"
       },
+      "End": true
+    },
+    "FailedProcessing": {
+      "Type": "Task",
+      "Resource": "${aws_lambda_function.failed_processing_handler.arn}",
       "End": true
     }
   }
@@ -72,7 +84,6 @@ data "aws_iam_policy_document" "audio_processor_policy" {
   }
 }
 
-
 resource "aws_iam_role_policy_attachment" "audio_processor_role_attachment" {
   role       = aws_iam_role.audio_processor.name
   policy_arn = aws_iam_policy.invoke_lambdas.arn
@@ -92,7 +103,8 @@ resource "aws_iam_policy" "invoke_lambdas" {
       ],
       "Resource": [
         "${aws_lambda_function.audio_transformer.arn}",
-        "${aws_lambda_function.audio_transcriber.arn}"
+        "${aws_lambda_function.audio_transcriber.arn}",
+        "${aws_lambda_function.failed_processing_handler.arn}"
       ]
     },
     {

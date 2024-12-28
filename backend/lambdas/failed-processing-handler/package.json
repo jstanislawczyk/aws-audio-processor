@@ -1,0 +1,23 @@
+{
+  "name": "failed-processing-handler",
+  "version": "1.0.0",
+  "description": "Lambda that handles failed audio processing",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@audio-processor/schemas": "*",
+    "@types/aws-lambda": "^8.10.140",
+    "esbuild": "^0.23.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.609.0",
+    "@aws-sdk/lib-dynamodb": "^3.609.0"
+  }
+}

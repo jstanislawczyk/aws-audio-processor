@@ -8,3 +8,11 @@ export interface AudioFileEvent {
   };
   source: S3Object;
 }
+
+export interface FailedProcessingEvent extends AudioFileEvent {
+  error: {
+    Error: string,
+    Cause: string,
+  }
+}
+
