@@ -8,4 +8,11 @@ export interface AudioJob {
   taskToken?: string;
 }
 
+export interface AudioJobDto {
+  id: string;
+  createdAt: number;
+  status: JobStatus;
+  fileName: string;
+}
+
 export type JobStatus = 'PROCESSING' | 'COMPLETED' | 'FAILED'
