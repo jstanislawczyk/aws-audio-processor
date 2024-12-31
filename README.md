@@ -12,3 +12,6 @@ The Lambda function processes the audio file and stores the processed file back 
 4. In `terraform` directory, run `terraform init` to initialize the project, `terraform plan` to see the changes and `terraform apply` to apply the changes.
 5. Copy API Gateway URL and use it in `apps/frontend/src/App.tsx` file to replace `apiURL` variable
 6. Go to main directory and run `yarn run dev` to start the frontend application
+
+## Architecture
+![Audio Processor](https://github.com/user-attachments/assets/5dccfeb9-bad3-410d-a0f1-3df5dde3cc1f)
