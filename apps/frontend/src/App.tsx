@@ -104,7 +104,7 @@ const UploadedFiles: React.FC = () => {
         <table className="audio-files-table">
           <thead>
           <tr>
-            <th>File key</th>
+            <th>File name</th>
             <th>Created at</th>
             <th>Status</th>
           </tr>

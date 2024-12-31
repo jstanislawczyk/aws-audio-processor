@@ -24,12 +24,15 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     }
 
     const fileName = JSON.parse(eventBody).fileName;
-    const { name: fileBaseName, ext } = path.parse(fileName);
     const id = crypto.randomUUID();
     const s3Client = initS3Client();
+    const date = new Date();
+    const day = date.getUTCDate();
+    const month = date.getUTCMonth() + 1;
+    const year = date.getUTCFullYear();
     const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
-        Key: `uploaded/${fileBaseName}/${id}${ext}`,
+        Key: `uploaded/${year}/${month}/${day}/${id}/${fileName}`,
         Metadata: {
             id,
         },
