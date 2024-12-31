@@ -30,3 +30,14 @@ resource "aws_s3_bucket_notification" "upload_notification" {
     filter_suffix       = "transcription.json"
   }
 }
+
+locals {
+  path_to_intro = "${path.module}/intro/intro.mp3"
+}
+
+resource "aws_s3_object" "intro" {
+  bucket = aws_s3_bucket.audio.id
+  key    = "intro/intro.mp3"
+  source = local.path_to_intro
+  etag   = filemd5(local.path_to_intro)
+}

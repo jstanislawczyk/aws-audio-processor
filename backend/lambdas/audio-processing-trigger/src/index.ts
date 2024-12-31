@@ -4,9 +4,7 @@ import {StartExecutionCommand} from '@aws-sdk/client-sfn';
 import {initDocumentClient} from './document-clients';
 import {AudioFileEvent, AudioJob} from '@audio-processor/schemas';
 import {PutCommand} from '@aws-sdk/lib-dynamodb';
-
-const sfnClient = initSFNClient();
-const documentClient = initDocumentClient();
+import * as path from 'node:path';
 
 export const handler = async (event: SQSEvent): Promise<void> => {
     const records = event.Records;
@@ -30,9 +28,11 @@ const startJob = async (sqsRecord: SQSRecord): Promise<void> => {
 }
 
 const createAudioJobRecord = async (audioEvent: AudioFileEvent) => {
+    const documentClient = initDocumentClient();
     const audioJob: AudioJob = {
         id: audioEvent.id,
-        s3Object: audioEvent.source,
+        uploadedObject: audioEvent.source,
+        fileName: path.parse(audioEvent.source.key).base,
         createdAt: Date.now(),
         status: 'PROCESSING',
     };
@@ -45,6 +45,7 @@ const createAudioJobRecord = async (audioEvent: AudioFileEvent) => {
 }
 
 const startStateMachineExecution = (sqsRecordBody: string) => {
+    const sfnClient = initSFNClient();
     const startExecutionCommand =  new StartExecutionCommand({
         stateMachineArn: process.env.STATE_MACHINE_ARN,
         input: sqsRecordBody,

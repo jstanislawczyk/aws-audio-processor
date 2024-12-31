@@ -2,7 +2,8 @@ import {S3Object} from './s3';
 
 export interface AudioJob {
   id: string;
-  s3Object: S3Object;
+  uploadedObject: S3Object;
+  fileName: string;
   createdAt: number;
   status: JobStatus;
   taskToken?: string;

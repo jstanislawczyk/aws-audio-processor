@@ -23,7 +23,13 @@ export const handler = async (event: S3Event): Promise<void> => {
 const sendAudioFileEvent = (sqsClient: SQSClient, s3EventRecord: S3EventRecord) => {
     const s3Key = s3EventRecord.s3.object.key;
     const s3Bucket = s3EventRecord.s3.bucket.name;
-    const audioId = path.parse(s3Key).name;
+    const parsedPath = path.parse(s3Key);
+    const audioId = parsedPath.dir.split('/').pop();
+
+    if (!audioId) {
+        throw new Error(`Audio ID not found in the key. Key: ${s3Key}`);
+    }
+
     const audioFileEvent: AudioFileEvent = {
         id: audioId,
         target: {

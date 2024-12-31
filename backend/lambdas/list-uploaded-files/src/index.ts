@@ -32,5 +32,5 @@ const mapToDto = (job: AudioJob): AudioJobDto => ({
     id: job.id,
     createdAt: job.createdAt,
     status: job.status,
-    fileName: job.s3Object.key,
+    fileName: job.fileName,
 });
