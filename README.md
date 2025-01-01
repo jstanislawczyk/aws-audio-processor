@@ -7,11 +7,12 @@ The Lambda function processes the audio file and stores the processed file back 
 
 ## How to run the project
 1. Install Node.js 20 nad Yarn (you can use NVM)
-2. Go to main directory and run `yarn` to install dependencies and `yarn run build` to build the project
-3. In `terraform/sns.tf`, replace `aws_sns_topic_subscription` endpoint with your email
-4. In `terraform` directory, run `terraform init` to initialize the project, `terraform plan` to see the changes and `terraform apply` to apply the changes.
-5. Copy API Gateway URL and use it in `apps/frontend/src/App.tsx` file to replace `apiURL` variable
-6. Go to main directory and run `yarn run dev` to start the frontend application
+2. Download FFProbe and FFMPEG and save it as separate .zip archives (`ffmpeg.zip` and `ffprobe.zip`) in `deployment/layers`. Check [FFMPEG](https://www.ffmpeg.org/).
+3. Go to main directory and run `yarn` to install dependencies and `yarn run build` to build the project
+4. In `deployment/sns.tf`, replace `aws_sns_topic_subscription` endpoint with your email
+5. In `deployment` directory, run `terraform init` to initialize the project, `terraform plan` to see the changes and `terraform apply` to apply the changes.
+6. Copy API Gateway URL and use it in `apps/frontend/src/App.tsx` file to replace `apiURL` variable
+7. Go to main directory and run `yarn run dev` to start the frontend application
 
 ## Architecture
 ![Audio Processor](https://github.com/user-attachments/assets/5dccfeb9-bad3-410d-a0f1-3df5dde3cc1f)
